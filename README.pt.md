@@ -18,6 +18,8 @@ Baixe `StardewValleySaveManager.exe` no [último GitHub Release](https://github.
 
 A interface está disponível em inglês, chinês simplificado, português, espanhol e japonês. Os tipos de animais são traduzidos para o idioma escolhido; tipos desconhecidos de animais adicionados por mods continuam visíveis com o valor original do jogo.
 
+Use **Sobre**, no canto inferior esquerdo, para ver o autor, o repositório e a versão instalada, ou abrir as respetivas páginas do GitHub.
+
 ## Proteção dos saves
 
 Ao iniciar, o aplicativo procura o diretório padrão do Windows:
