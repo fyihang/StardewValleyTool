@@ -27,3 +27,6 @@ class Translator:
             return self.current[key].format(**values)
         except KeyError as error:
             raise KeyError(f"Unknown translation key: {key}") from error
+
+    def animal_type(self, type_name: str) -> str:
+        return self.current.get(f"animal.type.{type_name}", type_name)
