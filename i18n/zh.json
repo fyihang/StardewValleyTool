@@ -2,6 +2,7 @@
   "app.title": "星露谷物语存档管理工具",
   "action.refresh": "刷新存档",
   "action.save": "保存修改",
+  "action.choose_directory": "选择存档目录",
   "label.farmer": "角色名称",
   "label.farm": "农场名称",
   "label.favorite": "最喜爱的事物",
@@ -36,5 +37,8 @@
   "animal.type.Turtle": "乌龟",
   "label.language": "语言",
   "status.loaded": "已加载：{name}",
+  "status.no_saves": "未找到存档",
+  "status.saved": "修改已保存",
+  "dialog.confirm_save": "保存修改？",
   "error.title": "存档管理工具错误"
 }

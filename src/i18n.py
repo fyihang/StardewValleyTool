@@ -1,6 +1,14 @@
 import json
 from pathlib import Path
 
+LANGUAGES = (
+    ("en", "English"),
+    ("zh", "中文"),
+    ("pt", "Português"),
+    ("es", "Español"),
+    ("jp", "日本語"),
+)
+
 
 class Translator:
     def __init__(self, resource_dir: Path, language: str = "en"):
