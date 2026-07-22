@@ -1,4 +1,4 @@
-# 星露谷物语存档管理工具
+# Stardew Valley Tool
 
 [English](README.md) | [Português](README.pt.md) | [Español](README.es.md) | [日本語](README.jp.md)
 

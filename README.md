@@ -1,4 +1,4 @@
-# Stardew Valley Save Manager
+# Stardew Valley Tool
 
 [简体中文](README.zh.md) | [Português](README.pt.md) | [Español](README.es.md) | [日本語](README.jp.md)
 

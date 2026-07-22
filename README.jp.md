@@ -1,4 +1,4 @@
-# Stardew Valley セーブ管理ツール
+# Stardew Valley Tool
 
 [English](README.md) | [简体中文](README.zh.md) | [Português](README.pt.md) | [Español](README.es.md)
 

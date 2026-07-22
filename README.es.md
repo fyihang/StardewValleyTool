@@ -1,4 +1,4 @@
-# Administrador de partidas de Stardew Valley
+# Stardew Valley Tool
 
 [English](README.md) | [简体中文](README.zh.md) | [Português](README.pt.md) | [日本語](README.jp.md)
 

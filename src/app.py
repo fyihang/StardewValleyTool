@@ -2,6 +2,7 @@ from dataclasses import replace
 from pathlib import Path
 import sys
 import tkinter as tk
+import webbrowser
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
 from discovery import default_save_root, discover_saves
@@ -10,6 +11,15 @@ from models import Animal, Farmhand, SaveData, SavePaths
 from reader import SaveConsistencyError, load_save
 from version import APP_VERSION
 from writer import SaveWriteError, save_changes
+
+
+AUTHOR_URL = "https://github.com/fyihang"
+REPOSITORY_URL = "https://github.com/fyihang/StardewValleyTool"
+VERSION_URL = "https://github.com/fyihang/StardewValleyTool/releases/latest"
+
+
+def open_url(url: str) -> None:
+    webbrowser.open_new_tab(url)
 
 
 def resource_dir() -> Path:
@@ -67,12 +77,12 @@ class SaveManagerApp:
             entry = ttk.Entry(self.farmhands_frame, textvariable=variable); entry.grid(row=row, column=1, sticky="ew", padx=4, pady=2); variable.trace_add("write", lambda *_: self._update_save_state())
         self.farmhands_frame.columnconfigure(1, weight=1)
         right.rowconfigure(4, weight=1)
-        self.save_button = ttk.Button(outer, command=self.save); self.save_button.pack(anchor="e"); self._translate()
-        self.version = tk.StringVar(value=APP_VERSION)
-        self.version_entry = ttk.Entry(outer, textvariable=self.version, width=18, state="readonly"); self.version_entry.pack(anchor="e")
+        footer = ttk.Frame(outer); footer.pack(fill="x")
+        self.about_button = ttk.Button(footer, command=self.show_about); self.about_button.pack(side="left")
+        self.save_button = ttk.Button(footer, command=self.save); self.save_button.pack(side="right"); self._translate()
 
     def _translate(self) -> None:
-        t = self.translator.text; self.root.title(t("app.title")); self.refresh_button.config(text=t("action.refresh")); self.choose_root_button.config(text=t("action.choose_directory")); self.save_button.config(text=t("action.save"))
+        t = self.translator.text; self.root.title(t("app.title")); self.refresh_button.config(text=t("action.refresh")); self.choose_root_button.config(text=t("action.choose_directory")); self.about_button.config(text=t("action.about")); self.save_button.config(text=t("action.save"))
         self.language_label.config(text=t("label.language")); self.labels["farmer"].config(text=t("label.farmer")); self.labels["farm"].config(text=t("label.farm")); self.labels["favorite"].config(text=t("label.favorite")); self.animals_label.config(text=t("label.animals")); self.farmhands_label.config(text=t("label.farmhands"))
         self.animals.heading("species", text=t("animal.species")); self.animals.heading("name", text=t("animal.name"))
         self.farmhand_labels["farmer"].config(text=t("farmhand.farmer")); self.farmhand_labels["favorite"].config(text=t("farmhand.favorite"))
@@ -101,6 +111,22 @@ class SaveManagerApp:
         if selected:
             self.save_root = Path(selected)
             self.refresh_saves()
+
+    def show_about(self) -> None:
+        window = tk.Toplevel(self.root)
+        window.title(self.translator.text("about.title"))
+        window.resizable(False, False)
+        body = ttk.Frame(window, padding=12); body.pack(fill="both", expand=True)
+        links = (
+            ("about.author", "fyihang", AUTHOR_URL),
+            ("about.repository", "Stardew Valley Tool", REPOSITORY_URL),
+            ("about.version", APP_VERSION, VERSION_URL),
+        )
+        for row, (label_key, value, url) in enumerate(links):
+            ttk.Label(body, text=self.translator.text(label_key)).grid(row=row, column=0, sticky="w", padx=(0, 12), pady=4)
+            link = ttk.Label(body, text=value, cursor="hand2")
+            link.grid(row=row, column=1, sticky="w", pady=4)
+            link.bind("<Button-1>", lambda _event, target=url: open_url(target))
 
     def refresh_saves(self) -> None:
         self.paths = discover_saves(self.save_root); self.save_list.delete(0, "end")
