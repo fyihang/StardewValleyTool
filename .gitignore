@@ -1,0 +1,14 @@
+# Python runtime and bytecode
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local validation and delivery artifacts
+tests/
+build.ps1
+build/
+dist/
+*.exe
+
+# Local process documentation
+docs/superpowers/
