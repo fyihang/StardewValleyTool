@@ -1,0 +1,13 @@
+{
+  "app.title": "Stardew Valley Save Manager",
+  "action.refresh": "Refresh saves",
+  "action.save": "Save changes",
+  "label.farmer": "Farmer name",
+  "label.farm": "Farm name",
+  "label.favorite": "Favorite thing",
+  "label.horse": "Horse name",
+  "label.animals": "Animals",
+  "label.language": "Language",
+  "status.loaded": "Loaded: {name}",
+  "error.title": "Save Manager error"
+}

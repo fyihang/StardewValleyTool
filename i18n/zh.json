@@ -1,0 +1,13 @@
+{
+  "app.title": "星露谷物语存档管理工具",
+  "action.refresh": "刷新存档",
+  "action.save": "保存修改",
+  "label.farmer": "角色名称",
+  "label.farm": "农场名称",
+  "label.favorite": "最喜爱的事物",
+  "label.horse": "马名称",
+  "label.animals": "动物",
+  "label.language": "语言",
+  "status.loaded": "已加载：{name}",
+  "error.title": "存档管理工具错误"
+}
