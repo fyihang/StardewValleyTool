@@ -40,6 +40,6 @@
   "status.no_saves": "Nenhum save encontrado",
   "status.saved": "Alterações salvas",
   "status.saved_with_backup": "Alterações salvas. Backup: {backup}",
-  "dialog.confirm_save": "Salvar alterações?",
+  "dialog.confirm_save": "Salve as alterações somente depois de fechar completamente o Stardew Valley.",
   "error.title": "Erro do Gerenciador de Saves"
 }

@@ -40,6 +40,6 @@
   "status.no_saves": "未找到存档",
   "status.saved": "修改已保存",
   "status.saved_with_backup": "修改已保存。备份：{backup}",
-  "dialog.confirm_save": "保存修改？",
+  "dialog.confirm_save": "请在完全关闭《星露谷物语》后再保存修改。",
   "error.title": "存档管理工具错误"
 }

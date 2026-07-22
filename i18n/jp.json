@@ -40,6 +40,6 @@
   "status.no_saves": "セーブが見つかりません",
   "status.saved": "変更を保存しました",
   "status.saved_with_backup": "変更を保存しました。バックアップ: {backup}",
-  "dialog.confirm_save": "変更を保存しますか？",
+  "dialog.confirm_save": "Stardew Valley を完全に終了してから、変更を保存してください。",
   "error.title": "セーブ管理ツールのエラー"
 }

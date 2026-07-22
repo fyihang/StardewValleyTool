@@ -40,6 +40,6 @@
   "status.no_saves": "No se encontraron partidas guardadas",
   "status.saved": "Cambios guardados",
   "status.saved_with_backup": "Cambios guardados. Copia de seguridad: {backup}",
-  "dialog.confirm_save": "¿Guardar cambios?",
+  "dialog.confirm_save": "Guarde los cambios únicamente después de cerrar Stardew Valley por completo.",
   "error.title": "Error del administrador de partidas guardadas"
 }

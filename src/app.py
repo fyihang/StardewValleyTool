@@ -86,7 +86,14 @@ class SaveManagerApp:
             self.language.set(LANGUAGES[index][0])
             self.translator.set_language(self.language.get())
         self._translate()
-        if not self.paths:
+        self._render_status()
+
+    def _render_status(self) -> None:
+        if self.loaded is not None:
+            self.status.set(self.translator.text("status.loaded", name=self.loaded.farmer_name))
+        elif self.paths:
+            self.status.set(str(self.save_root))
+        else:
             self.status.set(f"{self.translator.text('status.no_saves')}: {self.save_root}")
 
     def choose_save_root(self) -> None:
@@ -98,8 +105,7 @@ class SaveManagerApp:
     def refresh_saves(self) -> None:
         self.paths = discover_saves(self.save_root); self.save_list.delete(0, "end")
         for item in self.paths: self.save_list.insert("end", item.directory.name)
-        self.status.set(str(self.save_root) if self.paths else f"{self.translator.text('status.no_saves')}: {self.save_root}")
-        self.loaded = self.selected = None; self._update_save_state()
+        self.loaded = self.selected = None; self._render_status(); self._update_save_state()
 
     def _select_save(self, _event=None) -> None:
         if not self.save_list.curselection(): return
@@ -114,7 +120,7 @@ class SaveManagerApp:
                 self.farmhands_frame.grid(); self.farmhand_box["values"] = tuple(hand.farmer_name for hand in self._farmhands); self.farmhand_box.current(0); self._select_farmhand()
             else:
                 self.farmhands_frame.grid_remove(); self.farmhand_box.set("")
-            self.status.set(self.translator.text("status.loaded", name=values.farmer_name))
+            self._render_status()
         except (OSError, ValueError, SaveConsistencyError) as error: messagebox.showerror(self.translator.text("error.title"), str(error))
         self._update_save_state()
 

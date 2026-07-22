@@ -40,6 +40,6 @@
   "status.no_saves": "No saves found",
   "status.saved": "Changes saved",
   "status.saved_with_backup": "Changes saved. Backup: {backup}",
-  "dialog.confirm_save": "Save changes?",
+  "dialog.confirm_save": "Save changes only after completely closing Stardew Valley.",
   "error.title": "Save Manager error"
 }
