@@ -1,5 +1,6 @@
 from dataclasses import replace
 from pathlib import Path
+import sys
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
 
@@ -10,11 +11,19 @@ from .reader import SaveConsistencyError, load_save
 from .writer import SaveWriteError, save_changes
 
 
+def resource_dir() -> Path:
+    """Return the i18n directory in source and PyInstaller environments."""
+    frozen_root = getattr(sys, "_MEIPASS", None)
+    if frozen_root:
+        return Path(frozen_root) / "i18n"
+    return Path(__file__).parents[2] / "i18n"
+
+
 class SaveManagerApp:
     def __init__(self, root: tk.Tk, save_root: Path | None = None) -> None:
         self.root = root
         self.save_root = save_root or default_save_root()
-        self.translator = Translator(Path(__file__).parents[2] / "i18n")
+        self.translator = Translator(resource_dir())
         self.paths: tuple[SavePaths, ...] = ()
         self.loaded: SaveData | None = None
         self.selected: SavePaths | None = None
