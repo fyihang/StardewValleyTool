@@ -17,7 +17,8 @@ def _text(parent: ET.Element, field: str, optional: bool = False) -> str | None:
 
 
 def _farmer(root: ET.Element) -> ET.Element:
-    return root.find("player") or root
+    player = root.find("player")
+    return player if player is not None else root
 
 
 def load_save(paths: SavePaths) -> SaveData:
