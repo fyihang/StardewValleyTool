@@ -2,13 +2,24 @@ from dataclasses import replace
 from pathlib import Path
 import sys
 import tkinter as tk
-from tkinter import messagebox, simpledialog, ttk
+import webbrowser
+from tkinter import filedialog, messagebox, simpledialog, ttk
 
 from discovery import default_save_root, discover_saves
-from i18n import Translator
+from i18n import LANGUAGES, Translator
 from models import Animal, Farmhand, SaveData, SavePaths
 from reader import SaveConsistencyError, load_save
+from version import APP_VERSION
 from writer import SaveWriteError, save_changes
+
+
+AUTHOR_URL = "https://github.com/fyihang"
+REPOSITORY_URL = "https://github.com/fyihang/StardewValleyTool"
+VERSION_URL = "https://github.com/fyihang/StardewValleyTool/releases/latest"
+
+
+def open_url(url: str) -> None:
+    webbrowser.open_new_tab(url)
 
 
 def resource_dir() -> Path:
@@ -39,9 +50,10 @@ class SaveManagerApp:
         outer = ttk.Frame(self.root, padding=12); outer.pack(fill="both", expand=True)
         toolbar = ttk.Frame(outer); toolbar.pack(fill="x")
         self.refresh_button = ttk.Button(toolbar, command=self.refresh_saves); self.refresh_button.pack(side="left")
+        self.choose_root_button = ttk.Button(toolbar, command=self.choose_save_root); self.choose_root_button.pack(side="left", padx=(6, 0))
         ttk.Label(toolbar, textvariable=tk.StringVar(value="")).pack(side="left", padx=8)
-        self.language = tk.StringVar(value="en")
-        self.language_box = ttk.Combobox(toolbar, width=10, state="readonly", values=("English", "中文"))
+        self.language = tk.StringVar(value=LANGUAGES[0][0])
+        self.language_box = ttk.Combobox(toolbar, width=10, state="readonly", values=tuple(name for _, name in LANGUAGES))
         self.language_box.current(0); self.language_box.bind("<<ComboboxSelected>>", self._change_language); self.language_box.pack(side="right")
         self.language_label = ttk.Label(toolbar); self.language_label.pack(side="right", padx=6)
         panes = ttk.PanedWindow(outer, orient="horizontal"); panes.pack(fill="both", expand=True, pady=10)
@@ -65,10 +77,12 @@ class SaveManagerApp:
             entry = ttk.Entry(self.farmhands_frame, textvariable=variable); entry.grid(row=row, column=1, sticky="ew", padx=4, pady=2); variable.trace_add("write", lambda *_: self._update_save_state())
         self.farmhands_frame.columnconfigure(1, weight=1)
         right.rowconfigure(4, weight=1)
-        self.save_button = ttk.Button(outer, command=self.save); self.save_button.pack(anchor="e"); self._translate()
+        footer = ttk.Frame(outer); footer.pack(fill="x")
+        self.about_button = ttk.Button(footer, command=self.show_about); self.about_button.pack(side="left")
+        self.save_button = ttk.Button(footer, command=self.save); self.save_button.pack(side="right"); self._translate()
 
     def _translate(self) -> None:
-        t = self.translator.text; self.root.title(t("app.title")); self.refresh_button.config(text=t("action.refresh")); self.save_button.config(text=t("action.save"))
+        t = self.translator.text; self.root.title(t("app.title")); self.refresh_button.config(text=t("action.refresh")); self.choose_root_button.config(text=t("action.choose_directory")); self.about_button.config(text=t("action.about")); self.save_button.config(text=t("action.save"))
         self.language_label.config(text=t("label.language")); self.labels["farmer"].config(text=t("label.farmer")); self.labels["farm"].config(text=t("label.farm")); self.labels["favorite"].config(text=t("label.favorite")); self.animals_label.config(text=t("label.animals")); self.farmhands_label.config(text=t("label.farmhands"))
         self.animals.heading("species", text=t("animal.species")); self.animals.heading("name", text=t("animal.name"))
         self.farmhand_labels["farmer"].config(text=t("farmhand.farmer")); self.farmhand_labels["favorite"].config(text=t("farmhand.favorite"))
@@ -77,13 +91,47 @@ class SaveManagerApp:
             for item in self.animals.get_children(): self.animals.set(item, "species", self.translator.animal_type(originals[item].species))
 
     def _change_language(self, _event=None) -> None:
-        self.translator.set_language("zh" if self.language_box.current() == 1 else "en"); self._translate()
+        index = self.language_box.current()
+        if index >= 0:
+            self.language.set(LANGUAGES[index][0])
+            self.translator.set_language(self.language.get())
+        self._translate()
+        self._render_status()
+
+    def _render_status(self) -> None:
+        if self.loaded is not None:
+            self.status.set(self.translator.text("status.loaded", name=self.loaded.farmer_name))
+        elif self.paths:
+            self.status.set(str(self.save_root))
+        else:
+            self.status.set(f"{self.translator.text('status.no_saves')}: {self.save_root}")
+
+    def choose_save_root(self) -> None:
+        selected = filedialog.askdirectory(parent=self.root, initialdir=self.save_root)
+        if selected:
+            self.save_root = Path(selected)
+            self.refresh_saves()
+
+    def show_about(self) -> None:
+        window = tk.Toplevel(self.root)
+        window.title(self.translator.text("about.title"))
+        window.resizable(False, False)
+        body = ttk.Frame(window, padding=12); body.pack(fill="both", expand=True)
+        links = (
+            ("about.author", "fyihang", AUTHOR_URL),
+            ("about.repository", "fyihang/StardewValleyTool", REPOSITORY_URL),
+            ("about.version", APP_VERSION, VERSION_URL),
+        )
+        for row, (label_key, value, url) in enumerate(links):
+            ttk.Label(body, text=self.translator.text(label_key)).grid(row=row, column=0, sticky="w", padx=(0, 12), pady=4)
+            link = ttk.Label(body, text=value, cursor="hand2")
+            link.grid(row=row, column=1, sticky="w", pady=4)
+            link.bind("<Button-1>", lambda _event, target=url: open_url(target))
 
     def refresh_saves(self) -> None:
         self.paths = discover_saves(self.save_root); self.save_list.delete(0, "end")
         for item in self.paths: self.save_list.insert("end", item.directory.name)
-        self.status.set(str(self.save_root) if self.paths else f"No valid saves found in {self.save_root}")
-        self.loaded = self.selected = None; self._update_save_state()
+        self.loaded = self.selected = None; self._render_status(); self._update_save_state()
 
     def _select_save(self, _event=None) -> None:
         if not self.save_list.curselection(): return
@@ -98,7 +146,7 @@ class SaveManagerApp:
                 self.farmhands_frame.grid(); self.farmhand_box["values"] = tuple(hand.farmer_name for hand in self._farmhands); self.farmhand_box.current(0); self._select_farmhand()
             else:
                 self.farmhands_frame.grid_remove(); self.farmhand_box.set("")
-            self.status.set(self.translator.text("status.loaded", name=values.farmer_name))
+            self._render_status()
         except (OSError, ValueError, SaveConsistencyError) as error: messagebox.showerror(self.translator.text("error.title"), str(error))
         self._update_save_state()
 
@@ -135,9 +183,9 @@ class SaveManagerApp:
 
     def save(self) -> None:
         if self.loaded is None or self.selected is None: return
-        if not messagebox.askyesno(self.translator.text("app.title"), "Confirm Stardew Valley is closed before saving.", parent=self.root): return
+        if not messagebox.askyesno(self.translator.text("app.title"), self.translator.text("dialog.confirm_save"), parent=self.root): return
         try:
-            backup = save_changes(self.selected, self.loaded, self._current()); messagebox.showinfo(self.translator.text("app.title"), f"Saved successfully. Backup: {backup}", parent=self.root); self._select_save()
+            backup = save_changes(self.selected, self.loaded, self._current()); messagebox.showinfo(self.translator.text("app.title"), self.translator.text("status.saved_with_backup", backup=backup), parent=self.root); self._select_save()
         except SaveWriteError as error: messagebox.showerror(self.translator.text("error.title"), str(error), parent=self.root)
 
 

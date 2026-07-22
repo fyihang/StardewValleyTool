@@ -1,7 +1,13 @@
 {
-  "app.title": "Stardew Valley Save Manager",
+  "app.title": "Stardew Valley Tool",
   "action.refresh": "Refresh saves",
   "action.save": "Save changes",
+  "action.choose_directory": "Choose save directory",
+  "action.about": "About",
+  "about.title": "About Stardew Valley Tool",
+  "about.author": "Author",
+  "about.repository": "Repository",
+  "about.version": "Version",
   "label.farmer": "Farmer name",
   "label.farm": "Farm name",
   "label.favorite": "Favorite thing",
@@ -36,5 +42,9 @@
   "animal.type.Turtle": "Turtle",
   "label.language": "Language",
   "status.loaded": "Loaded: {name}",
+  "status.no_saves": "No saves found",
+  "status.saved": "Changes saved",
+  "status.saved_with_backup": "Changes saved. Backup: {backup}",
+  "dialog.confirm_save": "Save changes only after completely closing Stardew Valley.",
   "error.title": "Save Manager error"
 }

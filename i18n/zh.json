@@ -1,7 +1,13 @@
 {
-  "app.title": "星露谷物语存档管理工具",
+  "app.title": "Stardew Valley Tool",
   "action.refresh": "刷新存档",
   "action.save": "保存修改",
+  "action.choose_directory": "选择存档目录",
+  "action.about": "关于",
+  "about.title": "关于 Stardew Valley Tool",
+  "about.author": "作者",
+  "about.repository": "项目仓库",
+  "about.version": "版本",
   "label.farmer": "角色名称",
   "label.farm": "农场名称",
   "label.favorite": "最喜爱的事物",
@@ -36,5 +42,9 @@
   "animal.type.Turtle": "乌龟",
   "label.language": "语言",
   "status.loaded": "已加载：{name}",
+  "status.no_saves": "未找到存档",
+  "status.saved": "修改已保存",
+  "status.saved_with_backup": "修改已保存。备份：{backup}",
+  "dialog.confirm_save": "请在完全关闭《星露谷物语》后再保存修改。",
   "error.title": "存档管理工具错误"
 }

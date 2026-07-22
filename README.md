@@ -1,6 +1,6 @@
-# Stardew Valley Save Manager
+# Stardew Valley Tool
 
-[简体中文](README.zh-CN.md)
+[简体中文](README.zh.md) | [Português](README.pt.md) | [Español](README.es.md) | [日本語](README.jp.md)
 
 A Windows desktop application for inspecting and safely editing selected Stardew Valley save details. It works with the standard Windows save location and does not require Python when using the release executable.
 
@@ -16,15 +16,19 @@ Download `StardewValleySaveManager.exe` from the latest [GitHub Release](https:/
 - Names of existing animals, including the horse when present
 - Existing farmhand names and favourite things through a selector (farm name remains an owner-only setting)
 
-The interface is available in English and Simplified Chinese. Animal types are translated in the Chinese interface, while unknown modded animal types remain visible as their original in-game values.
+The interface is available in English, Simplified Chinese, Portuguese, Spanish, and Japanese. Animal types are translated in the selected interface language, while unknown modded animal types remain visible as their original in-game values.
+
+Use **About** in the lower-left corner to view the author, repository, and installed version, or to open their corresponding GitHub pages.
 
 ## Safe save handling
 
-The application automatically searches the standard Windows directory:
+The application starts by searching the standard Windows directory:
 
 ```text
 %appdata%\StardewValley\Saves
 ```
+
+Use **Choose save directory** to select a different save root for the current session. The choice is not saved and the next launch starts from the standard directory again.
 
 It recognises a save only when its folder contains both `SaveGameInfo` and the same-named main save file. Owner information shared by the two files is updated in both of them. Farmhands and animals are edited only in the main save, where those records are stored.
 
