@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-A Windows desktop application for viewing and safely editing selected Stardew Valley save details.
+A Windows desktop application for inspecting and safely editing selected Stardew Valley save details. It works with the standard Windows save location and does not require Python when using the release executable.
 
 ## Download
 
@@ -13,10 +13,10 @@ Download `StardewValleySaveManager.exe` from the latest [GitHub Release](https:/
 - Farmer name
 - Farm name
 - Favorite thing
-- Horse name, when the save contains one
-- Names of existing farm animals
+- Names of existing animals, including the horse when present
+- Existing farmhand names and favourite things through a selector (farm name remains an owner-only setting)
 
-The interface is available in English and Simplified Chinese.
+The interface is available in English and Simplified Chinese. Animal types are translated in the Chinese interface, while unknown modded animal types remain visible as their original in-game values.
 
 ## Safe save handling
 
@@ -26,7 +26,7 @@ The application automatically searches the standard Windows directory:
 %appdata%\StardewValley\Saves
 ```
 
-It recognises a save only when its folder contains both `SaveGameInfo` and the same-named main save file. Shared farmer information is updated in both files; animal names are changed only in the relevant main-save animal record.
+It recognises a save only when its folder contains both `SaveGameInfo` and the same-named main save file. Owner information shared by the two files is updated in both of them. Farmhands and animals are edited only in the main save, where those records are stored.
 
 Before writing, the application copies both files to `.svt-backups/<UTC timestamp>/` inside that save folder. It validates temporary XML files before replacement and checks the saved result afterward. If an error occurs during the transaction, it restores both original files from the backup.
 
@@ -35,7 +35,7 @@ Before writing, the application copies both files to `.svt-backups/<UTC timestam
 1. Close Stardew Valley completely.
 2. Start `StardewValleySaveManager.exe`.
 3. Select a save from the left-hand list.
-4. Edit the desired fields or double-click an animal name to rename it.
+4. Edit the owner fields, choose a farmhand when available, or double-click an animal name to rename it.
 5. Select **Save changes** and confirm that the game is closed.
 
 For the first use, make an independent copy of a save folder and test changes there. Keep the generated `.svt-backups` directory until you have verified the edited save in game.
