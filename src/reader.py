@@ -44,5 +44,12 @@ def load_save(paths: SavePaths) -> SaveData:
         animals.append(Animal(index, _text(node, "type") or "Unknown", _text(node, "name") or "", record_id))
     if left_horse is not None:
         animals.append(Animal(-1, "Horse", left_horse, kind="horse"))
-    farmhands = tuple(Farmhand(index, _text(node, "name") or "", _text(node, "farmName") or "", _text(node, "favoriteThing") or "") for index, node in enumerate(main_root.iter("Farmer")))
-    return SaveData(shared["name"], shared["farmName"], shared["favoriteThing"], left_horse, tuple(animals), farmhands)
+    farmhand_root = main_root.find("farmhands")
+    farmhand_nodes = () if farmhand_root is None else tuple(farmhand_root.findall("Farmer"))
+    farmhands = []
+    for index, node in enumerate(farmhand_nodes):
+        name = _text(node, "name", True) or ""
+        if not name:
+            continue
+        farmhands.append(Farmhand(index, name, _text(node, "farmName", True) or shared["farmName"], _text(node, "favoriteThing", True) or ""))
+    return SaveData(shared["name"], shared["farmName"], shared["favoriteThing"], left_horse, tuple(animals), tuple(farmhands))

@@ -46,23 +46,33 @@ def _patch_animals(xml: str, original: SaveData, updated: SaveData) -> str:
 
 
 def _patch_farmhands(xml: str, original: SaveData, updated: SaveData) -> str:
+    container_start = xml.find("<farmhands")
+    if container_start < 0:
+        if original.farmhands or updated.farmhands:
+            raise SaveWriteError("Farmhand container no longer exists")
+        return xml
+    content_start = xml.find(">", container_start) + 1
+    container_end = xml.find("</farmhands>", content_start)
+    if content_start <= 0 or container_end < 0:
+        raise SaveWriteError("Malformed farmhand container")
+    prefix, scoped, suffix = xml[:content_start], xml[content_start:container_end], xml[container_end:]
     for old, new in zip(original.farmhands, updated.farmhands, strict=True):
         if old == new:
             continue
         start = -1; search_at = 0
         for _ in range(old.index + 1):
-            start = xml.find("<Farmer", search_at)
+            start = scoped.find("<Farmer", search_at)
             if start < 0:
                 raise SaveWriteError("Farmhand record no longer exists")
             search_at = start + 1
-        end = xml.find("</Farmer>", start)
+        end = scoped.find("</Farmer>", start)
         if end < 0:
             raise SaveWriteError("Malformed farmhand record")
-        section = xml[start:end + len("</Farmer>")]
+        section = scoped[start:end + len("</Farmer>")]
         for element, value in (("name", new.farmer_name), ("farmName", new.farm_name), ("favoriteThing", new.favorite_thing)):
             section = replace_element_text(section, element, value)
-        xml = xml[:start] + section + xml[end + len("</Farmer>"):]
-    return xml
+        scoped = scoped[:start] + section + scoped[end + len("</Farmer>"):]
+    return prefix + scoped + suffix
 
 
 def save_changes(paths: SavePaths, original: SaveData, updated: SaveData) -> Path:
