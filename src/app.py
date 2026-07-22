@@ -119,7 +119,7 @@ class SaveManagerApp:
         body = ttk.Frame(window, padding=12); body.pack(fill="both", expand=True)
         links = (
             ("about.author", "fyihang", AUTHOR_URL),
-            ("about.repository", "Stardew Valley Tool", REPOSITORY_URL),
+            ("about.repository", "fyihang/StardewValleyTool", REPOSITORY_URL),
             ("about.version", APP_VERSION, VERSION_URL),
         )
         for row, (label_key, value, url) in enumerate(links):
