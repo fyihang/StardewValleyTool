@@ -1,75 +1,75 @@
-# Stardew Valley Save Manager Design
+# 星露谷物语存档管理工具设计
 
-## Purpose
+## 目标
 
-Build a Windows desktop application that reads and safely edits selected Stardew Valley save information. The application targets the standard Windows save root `%appdata%\\StardewValley\\Saves` and operates on one save-directory at a time.
+构建一个 Windows 桌面程序，用于读取和安全编辑《Stardew Valley》指定存档的信息。程序以标准 Windows 存档根目录 `%appdata%\\StardewValley\\Saves` 为目标，每次仅操作一个存档子目录。
 
-## Scope
+## 范围
 
-The first release shall display and edit these values:
+第一版显示并允许编辑以下信息：
 
-- Farmer name (`name`)
-- Farm name (`farmName`)
-- Favorite thing (`favoriteThing`)
-- Horse name (`horseName`), when present
-- Animal names found in the main save file
+- 角色名称（`name`）
+- 农场名称（`farmName`）
+- 最喜爱的事物（`favoriteThing`）
+- 马名称（`horseName`，字段存在时）
+- 主存档文件中已有动物的名称
 
-The program shall list every direct child directory of the save root as a candidate save. A candidate is valid only when it contains both `SaveGameInfo` and a main save file whose name equals the directory name.
+程序列出存档根目录下的每一个直接子文件夹。只有同时包含 `SaveGameInfo` 和一个与目录同名的主存档文件时，该目录才被认定为有效存档。
 
-## Architecture
+## 架构
 
-The application uses Python 3.11+ and Tkinter. Its source code is separated into a save-domain service, an XML text-patching service, an i18n service, and a thin Tkinter user interface. Domain services are independent of the GUI so that automated tests can exercise them with temporary fixture directories.
+程序使用 Python 3.11 及以上版本和 Tkinter 实现。源代码分为存档领域服务、XML 文本补丁服务、国际化服务和薄层 Tkinter 界面。领域服务不依赖界面，使自动化测试能够使用临时目录中的 XML 样本执行。
 
-The save-domain service reads the summary file `SaveGameInfo` and the same-named main save file. Shared farmer fields are read from both files and presented only when their values agree. Animal data is read only from the main save, because it belongs to the farm/world state.
+存档领域服务读取概要文件 `SaveGameInfo` 和同名主存档文件。两个文件共有的角色字段均会被读取，只有值一致时才显示为已同步。动物数据仅从主存档文件读取，因为其属于农场或世界状态。
 
-## Safe Write Transaction
+## 安全写入事务
 
-1. The user must confirm that Stardew Valley is closed. The interface provides a warning but does not attempt to terminate the game.
-2. Before changing a file, the program copies `SaveGameInfo` and the main save file into `<save directory>\\.svt-backups\\<UTC timestamp>\\`.
-3. The application parses both files as XML and checks that the requested XML element exists in every file that must be changed. Optional missing fields, including a missing horse name, are reported and are never created automatically.
-4. The program changes only text values of the selected XML elements. It preserves the remainder of each file by replacing the exact XML text span rather than serializing a new XML tree.
-5. Updated content is written to temporary files in the same directory. Each temporary file is parsed again and its requested fields are checked.
-6. Only after all temporary files validate are they atomically replaced into their original paths. A failed replacement restores every original from the backup and reports the failure.
-7. The program re-reads both saved files and verifies that synchronized values are identical and equal to the requested values.
+1. 用户必须确认游戏已经关闭。界面显示明确警告，但不会自行结束游戏进程。
+2. 在修改前，程序把 `SaveGameInfo` 和主存档文件分别复制到 `<存档目录>\\.svt-backups\\<UTC 时间戳>\\`。
+3. 程序将两个文件解析为 XML，并确认所有待修改文件中都存在对应元素。马名称等可选字段缺失时，只报告该情况，绝不自动创建字段。
+4. 程序仅替换指定 XML 元素的文本值。它通过替换精确的 XML 文本区段而非重新序列化整棵 XML 树，从而保留文件其他部分。
+5. 更新后的内容先写入同一目录的临时文件；每个临时文件均会再次解析，并核验待修改字段。
+6. 只有全部临时文件通过校验后，才以原子替换方式覆盖原始文件。替换失败时，从备份恢复所有原始文件，并报告错误。
+7. 程序重新读取两个已保存文件，验证同步字段彼此一致且与用户请求的值一致。
 
-No operation edits a file outside the selected save directory. No operation changes unknown XML fields, XML element ordering, comments, encoding declaration, or unrelated whitespace.
+任何操作都不得编辑所选存档目录以外的文件。程序不得修改未知 XML 字段、元素顺序、注释、编码声明或无关空白。
 
-## Animal Editing
+## 动物名称编辑
 
-The application identifies animal records in the main save by their object structure and presents each existing animal by species and name. Renaming an animal changes only the `name` element within that selected animal record. Duplicate names remain separate records and are addressed by their stable ordinal position in the loaded list. The program does not add, remove, transfer, or otherwise alter animals.
+程序根据主存档中的对象结构识别动物记录，按物种和名称列出每一只已有动物。修改动物名称时，仅修改所选动物记录内部的 `name` 元素。即使多只动物同名，它们仍是独立记录，并以加载列表中的稳定序号区分。程序不新增、删除、转移或以任何方式改变动物。
 
-## User Interface
+## 用户界面
 
-The UI contains:
+界面包含：
 
-- A save list with a refresh control and an indication for invalid/incomplete save directories.
-- A details pane containing editable text fields for the farmer, farm, favorite thing, and optional horse.
-- An animal table with an editable name column.
-- A language selection control.
-- A save button, backup path/status display, error dialogs, and a final success dialog listing the verified fields.
+- 存档列表、刷新控件，以及无效或不完整存档目录的状态标识。
+- 信息面板，其中包含角色、农场、最喜爱的事物和可选马名称的可编辑文本框。
+- 动物表格，其中名称列可以编辑。
+- 语言选择控件。
+- 保存按钮、备份路径与状态显示、错误对话框，以及列出已核验字段的成功对话框。
 
-The UI prevents saving without a selected valid save or when no field has changed. It presents parse errors and synchronization mismatches as actionable errors rather than guessing a value.
+未选择有效存档或没有修改内容时，界面禁止保存。解析错误和同步不一致均以可执行的错误信息呈现，不猜测或擅自采用任一文件中的值。
 
-## Internationalization
+## 国际化
 
-All visible strings are translation keys resolved by an i18n service. `i18n/default.json` is the authoritative English resource. `i18n/zh.json` contains the equivalent Simplified Chinese translations with the same keys. The user can change language while the application is running; then all static controls and messages refresh without changing loaded save data.
+所有可见文本均以翻译键形式通过国际化服务解析。`i18n/default.json` 为权威英文资源，`i18n/zh.json` 提供具有完全相同键集合的简体中文翻译。用户可在程序运行时切换语言；切换后，所有静态控件和消息即时刷新，不改变已加载的存档数据。
 
-## Repository and Delivery Policy
+## 仓库与交付策略
 
-The public GitHub repository is `fyihang/StardewValleyTool` under the MIT License. Source code, i18n resources, documentation, and `.gitignore` are committed and pushed at meaningful implementation boundaries. The final `README.md` describes installation, safe-edit behavior, language selection, and recovery from a backup.
+公开 GitHub 仓库为 `fyihang/StardewValleyTool`，采用 MIT License。源代码、国际化资源、中文设计文档和 `.gitignore` 在主要实现阶段提交并推送。最终 `README.md` 以英文为默认内容，同时提供独立中文说明文件 `README.zh-CN.md`，并通过相互链接提供语言选择。两个 README 均说明安装、安全编辑机制、语言选择和备份恢复方法。
 
-Automated tests, PyInstaller build scripts, build artifacts, and the generated single-file `.exe` remain local during development and are excluded by `.gitignore`. After the user tests the executable successfully, the user may authorize publishing those selected artifacts to a GitHub Release.
+自动化测试、PyInstaller 打包脚本、构建产物和生成的单文件 `.exe` 在开发期间仅保留在本地，并由 `.gitignore` 排除。待用户实际测试该可执行文件通过后，可由用户授权将指定产物发布到 GitHub Release。
 
-## Testing and Acceptance Criteria
+## 测试与验收标准
 
-Tests use temporary representative XML files and verify:
+测试使用临时目录中的代表性 XML 文件，验证：
 
-- Save-directory discovery and valid-pair detection.
-- Reading the requested fields from both files and detection of disagreement.
-- Exact replacement of requested text while unrelated XML text remains unchanged.
-- Synchronized update of shared farmer fields in both files.
-- Main-file-only update of a selected animal name.
-- Backup creation, post-write XML validation, and restoration after a simulated failure.
-- English and Chinese translation resources have exactly matching keys.
+- 存档目录发现及有效双文件识别。
+- 从两个文件读取指定字段，以及发现不一致值。
+- 精确替换指定文本，同时保证无关 XML 文本不变。
+- 在两个文件中同步更新角色共有字段。
+- 仅在主存档中更新所选动物名称。
+- 创建备份、写后 XML 校验，以及模拟失败后的恢复。
+- 英文和中文翻译资源具有完全相同的键集合。
 
-Acceptance requires a successful local test run, a successful PyInstaller build, and a manual executable check against a copied save before the executable is uploaded to a GitHub Release.
+验收必须包括：本地自动化测试成功、PyInstaller 构建成功，以及针对复制存档的手动可执行文件检查。可执行文件只有在通过用户测试后才能上传至 GitHub Release。
