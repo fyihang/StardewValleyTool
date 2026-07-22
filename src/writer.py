@@ -24,20 +24,44 @@ def _patch_farmer(xml: str, updated: SaveData) -> str:
 
 def _patch_animals(xml: str, original: SaveData, updated: SaveData) -> str:
     for old, new in zip(original.animals, updated.animals, strict=True):
-        if old.name == new.name:
+        if old.name == new.name or old.kind == "horse":
             continue
-        start = -1
+        starts: list[int] = []
         search_at = 0
+        while (start := xml.find("<FarmAnimal", search_at)) >= 0:
+            starts.append(start); search_at = start + 1
+        targets = starts if old.record_id is not None else [starts[old.index]]
+        offset = 0
+        for start in targets:
+            start += offset; end = xml.find("</FarmAnimal>", start)
+            if end < 0:
+                raise SaveWriteError("Malformed animal record")
+            section = xml[start:end + len("</FarmAnimal>")]
+            if old.record_id is not None and f"<myID>{old.record_id}</myID>" not in section:
+                continue
+            replacement = replace_element_text(section, "name", new.name)
+            xml = xml[:start] + replacement + xml[end + len("</FarmAnimal>"):]
+            offset += len(replacement) - len(section)
+    return xml
+
+
+def _patch_farmhands(xml: str, original: SaveData, updated: SaveData) -> str:
+    for old, new in zip(original.farmhands, updated.farmhands, strict=True):
+        if old == new:
+            continue
+        start = -1; search_at = 0
         for _ in range(old.index + 1):
-            start = xml.find("<FarmAnimal", search_at)
+            start = xml.find("<Farmer", search_at)
             if start < 0:
-                raise SaveWriteError("Animal record no longer exists")
+                raise SaveWriteError("Farmhand record no longer exists")
             search_at = start + 1
-        end = xml.find("</FarmAnimal>", start)
+        end = xml.find("</Farmer>", start)
         if end < 0:
-            raise SaveWriteError("Malformed animal record")
-        section = xml[start:end + len("</FarmAnimal>")]
-        xml = xml[:start] + replace_element_text(section, "name", new.name) + xml[end + len("</FarmAnimal>"):]
+            raise SaveWriteError("Malformed farmhand record")
+        section = xml[start:end + len("</Farmer>")]
+        for element, value in (("name", new.farmer_name), ("farmName", new.farm_name), ("favoriteThing", new.favorite_thing)):
+            section = replace_element_text(section, element, value)
+        xml = xml[:start] + section + xml[end + len("</Farmer>"):]
     return xml
 
 
@@ -49,7 +73,7 @@ def save_changes(paths: SavePaths, original: SaveData, updated: SaveData) -> Pat
         shutil.copy2(file, backup / file.name)
     try:
         info = _patch_farmer(paths.info_file.read_text(encoding="utf-8"), updated)
-        main = _patch_animals(_patch_farmer(paths.main_file.read_text(encoding="utf-8"), updated), original, updated)
+        main = _patch_farmhands(_patch_animals(_patch_farmer(paths.main_file.read_text(encoding="utf-8"), updated), original, updated), original, updated)
         temporary = []
         for target, content in ((paths.info_file, info), (paths.main_file, main)):
             handle = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False, dir=target.parent, suffix=".tmp")

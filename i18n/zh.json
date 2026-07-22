@@ -7,6 +7,12 @@
   "label.favorite": "最喜爱的事物",
   "label.horse": "马名称",
   "label.animals": "动物",
+  "label.farmhands": "联机用户",
+  "animal.species": "种类",
+  "animal.name": "名称",
+  "farmhand.farmer": "角色名称",
+  "farmhand.farm": "农场名称",
+  "farmhand.favorite": "最喜爱的事物",
   "label.language": "语言",
   "status.loaded": "已加载：{name}",
   "error.title": "存档管理工具错误"

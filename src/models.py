@@ -7,6 +7,16 @@ class Animal:
     index: int
     species: str
     name: str
+    record_id: str | None = None
+    kind: str = "animal"
+
+
+@dataclass(frozen=True)
+class Farmhand:
+    index: int
+    farmer_name: str
+    farm_name: str
+    favorite_thing: str
 
 
 @dataclass(frozen=True)
@@ -16,6 +26,7 @@ class SaveData:
     favorite_thing: str
     horse_name: str | None
     animals: tuple[Animal, ...]
+    farmhands: tuple[Farmhand, ...] = ()
 
 
 @dataclass(frozen=True)

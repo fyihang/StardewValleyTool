@@ -7,6 +7,12 @@
   "label.favorite": "Favorite thing",
   "label.horse": "Horse name",
   "label.animals": "Animals",
+  "label.farmhands": "Farmhands",
+  "animal.species": "Species",
+  "animal.name": "Name",
+  "farmhand.farmer": "Farmer",
+  "farmhand.farm": "Farm",
+  "farmhand.favorite": "Favorite thing",
   "label.language": "Language",
   "status.loaded": "Loaded: {name}",
   "error.title": "Save Manager error"

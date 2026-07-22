@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from models import Animal, SaveData, SavePaths
+from models import Animal, Farmhand, SaveData, SavePaths
 
 
 class SaveConsistencyError(ValueError):
@@ -33,5 +33,16 @@ def load_save(paths: SavePaths) -> SaveData:
     left_horse, right_horse = _text(info_farmer, "horseName", True), _text(main_farmer, "horseName", True)
     if left_horse != right_horse:
         raise SaveConsistencyError("Mismatched field: horseName")
-    animals = tuple(Animal(index, _text(node, "type") or "Unknown", _text(node, "name") or "") for index, node in enumerate(main_root.iter("FarmAnimal")))
-    return SaveData(shared["name"], shared["farmName"], shared["favoriteThing"], left_horse, animals)
+    animals: list[Animal] = []
+    seen_ids: set[str] = set()
+    for index, node in enumerate(main_root.iter("FarmAnimal")):
+        record_id = _text(node, "myID", True)
+        dedupe_key = record_id or f"occurrence:{index}"
+        if dedupe_key in seen_ids:
+            continue
+        seen_ids.add(dedupe_key)
+        animals.append(Animal(index, _text(node, "type") or "Unknown", _text(node, "name") or "", record_id))
+    if left_horse is not None:
+        animals.append(Animal(-1, "Horse", left_horse, kind="horse"))
+    farmhands = tuple(Farmhand(index, _text(node, "name") or "", _text(node, "farmName") or "", _text(node, "favoriteThing") or "") for index, node in enumerate(main_root.iter("Farmer")))
+    return SaveData(shared["name"], shared["farmName"], shared["favoriteThing"], left_horse, tuple(animals), farmhands)
