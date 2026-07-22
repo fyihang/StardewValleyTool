@@ -39,6 +39,7 @@
   "status.loaded": "Cargado: {name}",
   "status.no_saves": "No se encontraron partidas guardadas",
   "status.saved": "Cambios guardados",
+  "status.saved_with_backup": "Cambios guardados. Copia de seguridad: {backup}",
   "dialog.confirm_save": "¿Guardar cambios?",
   "error.title": "Error del administrador de partidas guardadas"
 }

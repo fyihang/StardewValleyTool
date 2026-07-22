@@ -39,6 +39,7 @@
   "status.loaded": "読み込み完了: {name}",
   "status.no_saves": "セーブが見つかりません",
   "status.saved": "変更を保存しました",
+  "status.saved_with_backup": "変更を保存しました。バックアップ: {backup}",
   "dialog.confirm_save": "変更を保存しますか？",
   "error.title": "セーブ管理ツールのエラー"
 }

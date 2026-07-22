@@ -39,6 +39,7 @@
   "status.loaded": "Loaded: {name}",
   "status.no_saves": "No saves found",
   "status.saved": "Changes saved",
+  "status.saved_with_backup": "Changes saved. Backup: {backup}",
   "dialog.confirm_save": "Save changes?",
   "error.title": "Save Manager error"
 }

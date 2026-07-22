@@ -86,6 +86,8 @@ class SaveManagerApp:
             self.language.set(LANGUAGES[index][0])
             self.translator.set_language(self.language.get())
         self._translate()
+        if not self.paths:
+            self.status.set(f"{self.translator.text('status.no_saves')}: {self.save_root}")
 
     def choose_save_root(self) -> None:
         selected = filedialog.askdirectory(parent=self.root, initialdir=self.save_root)
@@ -151,7 +153,7 @@ class SaveManagerApp:
         if self.loaded is None or self.selected is None: return
         if not messagebox.askyesno(self.translator.text("app.title"), self.translator.text("dialog.confirm_save"), parent=self.root): return
         try:
-            backup = save_changes(self.selected, self.loaded, self._current()); messagebox.showinfo(self.translator.text("app.title"), f"{self.translator.text('status.saved')}. Backup: {backup}", parent=self.root); self._select_save()
+            backup = save_changes(self.selected, self.loaded, self._current()); messagebox.showinfo(self.translator.text("app.title"), self.translator.text("status.saved_with_backup", backup=backup), parent=self.root); self._select_save()
         except SaveWriteError as error: messagebox.showerror(self.translator.text("error.title"), str(error), parent=self.root)
 
 
