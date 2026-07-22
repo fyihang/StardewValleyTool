@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from .models import SavePaths
+from models import SavePaths
 
 
 def default_save_root(appdata: str | None = None) -> Path:

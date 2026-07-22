@@ -4,11 +4,11 @@ import sys
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
 
-from .discovery import default_save_root, discover_saves
-from .i18n import Translator
-from .models import Animal, SaveData, SavePaths
-from .reader import SaveConsistencyError, load_save
-from .writer import SaveWriteError, save_changes
+from discovery import default_save_root, discover_saves
+from i18n import Translator
+from models import Animal, SaveData, SavePaths
+from reader import SaveConsistencyError, load_save
+from writer import SaveWriteError, save_changes
 
 
 def resource_dir() -> Path:
@@ -16,7 +16,7 @@ def resource_dir() -> Path:
     frozen_root = getattr(sys, "_MEIPASS", None)
     if frozen_root:
         return Path(frozen_root) / "i18n"
-    return Path(__file__).parents[2] / "i18n"
+    return Path(__file__).parent.parent / "i18n"
 
 
 class SaveManagerApp:

@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from .models import Animal, SaveData, SavePaths
+from models import Animal, SaveData, SavePaths
 
 
 class SaveConsistencyError(ValueError):

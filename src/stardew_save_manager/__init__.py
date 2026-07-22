@@ -1,2 +1,0 @@
-"""Stardew Valley Save Manager."""
-

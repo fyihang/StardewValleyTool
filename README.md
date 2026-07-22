@@ -2,30 +2,53 @@
 
 [简体中文](README.zh-CN.md)
 
-A Windows desktop tool for safely reading and editing selected Stardew Valley save information.
+A Windows desktop application for viewing and safely editing selected Stardew Valley save details.
 
-## Safety model
+## Download
 
-- Uses `%appdata%\StardewValley\Saves`; no user-specific path is embedded in the program.
-- A save is valid only when its directory contains both `SaveGameInfo` and the same-named main save file.
-- Farmer name, farm name, favorite thing, and an existing horse name are updated in both XML files.
-- Animal names are changed only in their existing main-save `FarmAnimal` records.
-- Before every save, the tool copies both files to `.svt-backups/<UTC timestamp>/` inside the selected save directory.
-- It validates temporary XML files before replacement, reads the result back afterward, and restores both originals if an error occurs.
+Download `StardewValleySaveManager.exe` from the latest [GitHub Release](https://github.com/fyihang/StardewValleyTool/releases). No Python installation is required for the release executable.
 
-Close Stardew Valley before editing a save. Test changes on a copied save first.
+## What it can edit
 
-## Run from source
+- Farmer name
+- Farm name
+- Favorite thing
+- Horse name, when the save contains one
+- Names of existing farm animals
 
-Python 3.11 or later is required. From PowerShell at the repository root:
+The interface is available in English and Simplified Chinese.
+
+## Safe save handling
+
+The application automatically searches the standard Windows directory:
+
+```text
+%appdata%\StardewValley\Saves
+```
+
+It recognises a save only when its folder contains both `SaveGameInfo` and the same-named main save file. Shared farmer information is updated in both files; animal names are changed only in the relevant main-save animal record.
+
+Before writing, the application copies both files to `.svt-backups/<UTC timestamp>/` inside that save folder. It validates temporary XML files before replacement and checks the saved result afterward. If an error occurs during the transaction, it restores both original files from the backup.
+
+## How to use
+
+1. Close Stardew Valley completely.
+2. Start `StardewValleySaveManager.exe`.
+3. Select a save from the left-hand list.
+4. Edit the desired fields or double-click an animal name to rename it.
+5. Select **Save changes** and confirm that the game is closed.
+
+For the first use, make an independent copy of a save folder and test changes there. Keep the generated `.svt-backups` directory until you have verified the edited save in game.
+
+## Source code
+
+To run from source, install Python 3.11 or later and execute:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m stardew_save_manager
+python src\__main__.py
 ```
 
-The language selector switches the running interface between English and Simplified Chinese.
+## License
 
-## Release policy
-
-Automated tests, the PyInstaller build script, build directories, and the `.exe` remain local during development. A release artifact will be published only after user testing has been completed successfully.
+Distributed under the [MIT License](LICENSE).

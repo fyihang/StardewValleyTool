@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from .models import SaveData, SavePaths
-from .reader import load_save
-from .xml_patch import replace_element_text
+from models import SaveData, SavePaths
+from reader import load_save
+from xml_patch import replace_element_text
 
 
 class SaveWriteError(RuntimeError):
