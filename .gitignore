@@ -9,6 +9,7 @@ build.ps1
 build/
 dist/
 *.exe
+*.spec
 
 # Local documentation and isolated worktrees
 docs/
