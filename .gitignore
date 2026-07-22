@@ -10,5 +10,6 @@ build/
 dist/
 *.exe
 
-# Local process documentation
-docs/superpowers/
+# Local documentation and isolated worktrees
+docs/
+.worktrees/
