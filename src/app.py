@@ -72,6 +72,9 @@ class SaveManagerApp:
         self.language_label.config(text=t("label.language")); self.labels["farmer"].config(text=t("label.farmer")); self.labels["farm"].config(text=t("label.farm")); self.labels["favorite"].config(text=t("label.favorite")); self.animals_label.config(text=t("label.animals")); self.farmhands_label.config(text=t("label.farmhands"))
         self.animals.heading("species", text=t("animal.species")); self.animals.heading("name", text=t("animal.name"))
         self.farmhand_labels["farmer"].config(text=t("farmhand.farmer")); self.farmhand_labels["favorite"].config(text=t("farmhand.favorite"))
+        if self.loaded is not None:
+            originals = {str(animal.index): animal for animal in self.loaded.animals}
+            for item in self.animals.get_children(): self.animals.set(item, "species", self.translator.animal_type(originals[item].species))
 
     def _change_language(self, _event=None) -> None:
         self.translator.set_language("zh" if self.language_box.current() == 1 else "en"); self._translate()
@@ -89,7 +92,7 @@ class SaveManagerApp:
             self.loaded = load_save(self.selected); values = self.loaded
             for key, value in (("farmer", values.farmer_name), ("farm", values.farm_name), ("favorite", values.favorite_thing)): self.vars[key].set(value)
             self.animals.delete(*self.animals.get_children())
-            for animal in values.animals: self.animals.insert("", "end", iid=str(animal.index), values=(animal.species, animal.name))
+            for animal in values.animals: self.animals.insert("", "end", iid=str(animal.index), values=(self.translator.animal_type(animal.species), animal.name))
             self._farmhands = list(values.farmhands); self._active_farmhand = None
             if self._farmhands:
                 self.farmhands_frame.grid(); self.farmhand_box["values"] = tuple(hand.farmer_name for hand in self._farmhands); self.farmhand_box.current(0); self._select_farmhand()
